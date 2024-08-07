@@ -20,9 +20,10 @@ public class PersonDAO {
     }
 
     private static final String INSERT_OR_UPDATE_PERSON_SQL =
-            "INSERT INTO person (FirstName, LastName, Email, PhoneNumber, Role, EnrollmentDate, HireDate, ProgramID) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+            "INSERT INTO person (PersonID, FirstName, LastName, Email, PhoneNumber, Role, EnrollmentDate, HireDate, ProgramID) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                     "ON DUPLICATE KEY UPDATE " +
+                    "PersonID = VALUES(PersonID), " +
                     "FirstName = VALUES(FirstName), " +
                     "LastName = VALUES(LastName), " +
                     "Email = VALUES(Email), " +
@@ -35,6 +36,7 @@ public class PersonDAO {
     @Transactional
     public void addPerson(PersonModel person) {
         jdbcTemplate.update(INSERT_OR_UPDATE_PERSON_SQL,
+                person.getPersonID(),
                 person.getFirstName(),
                 person.getLastName(),
                 person.getEmail(),
@@ -47,6 +49,21 @@ public class PersonDAO {
 
     public List<PersonModel> getPerson() {
         return jdbcTemplate.query("SELECT * FROM person",
+                (rs, rowNum) -> new PersonModel(
+                        rs.getLong("PersonID"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("PhoneNumber"),
+                        PersonModel.Role.valueOf(StringUtils.upperCase(rs.getString("Role"))), // Convert string to enum
+                        rs.getDate("EnrollmentDate"),
+                        rs.getDate("HireDate"),
+                        rs.getLong("ProgramID")
+                ));
+    }
+    public PersonModel getPersonById(Long id) {
+        return jdbcTemplate.queryForObject("SELECT * FROM person WHERE PersonID =?",
+                new Object[]{id},
                 (rs, rowNum) -> new PersonModel(
                         rs.getLong("PersonID"),
                         rs.getString("FirstName"),

@@ -26,10 +26,22 @@ public class PersonController {
             personService.addPerson(person);
         }
     }
-    @GetMapping("/person")
-    public List<PersonModel> getPerson(){
-        return personService.getPerson();
+    @PutMapping ("/person")
+    public void updatePerson(@RequestBody PersonModel person) {
+        if(person!= null) {
+            personService.updatePerson(person);
+        }
     }
+    @GetMapping("/person/{id}")
+    public PersonModel getPerson(@PathVariable (required = false) Long id){
+        return personService.getPersonById(id);
+    }
+
+    @GetMapping("/person")
+    public List<PersonModel> getAllPerson(){
+        return personService.getAllPerson();
+    }
+
     @DeleteMapping("/person/{id}")
     public ResponseEntity<String> deletePerson(@PathVariable (required = false) Long id) {
         if(id == null) {

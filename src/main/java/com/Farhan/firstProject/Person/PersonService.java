@@ -20,9 +20,18 @@ public class PersonService {
 
         personDAO.addPerson(person);
     }
-    public List<PersonModel> getPerson(){
+
+    public void updatePerson(PersonModel person){
+        personDAO.addPerson(person);
+    }
+    public List<PersonModel> getAllPerson(){
         return personDAO.getPerson();
     }
+
+    public PersonModel getPersonById(Long id){
+        return personDAO.getPersonById(id);
+    }
+
     public boolean deletePerson(Long id){
         return personDAO.deletePerson(id);
     }
